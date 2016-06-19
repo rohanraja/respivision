@@ -14,7 +14,6 @@ class PipeLine():
     def run(self, inputFrames):
         # The bounding rectangle contaning area where respiratory movements occur
 
-        return inputFrames.sum()
         roiBoundingRects = getModule("RegionOfInterest")(
                 inputFrames
         )
@@ -44,9 +43,11 @@ class PipeLine():
         )
 
         # Select the most prominent frequency
-        signals = getModule("Select Frequency")(
+        respiratoryRate = getModule("Select Frequency")(
                 freqs, 
                 signals,
         )
+
+        return respiratoryRate
 
 

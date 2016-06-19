@@ -10,7 +10,7 @@ def sampleAndRunLoop(vidSource):
     sampleLen = getParam["SampleLength"]
 
     ret, frame = vidSource.read()
-    sample = np.zeros(( sampleLen, frame.shape[0], frame.shape[1], 3 ))
+    sample = np.zeros(( sampleLen, frame.shape[0], frame.shape[1], 3 ), dtype=np.uint8)
 
     idx = 0
 
@@ -21,6 +21,7 @@ def sampleAndRunLoop(vidSource):
         
         if idx < sampleLen:
             sample[idx] = frame
+            # continue
         else:
             # Slide sampling window
             sample = np.insert( sample[1:], -1, frame, axis = 0)
@@ -33,7 +34,7 @@ def sampleAndRunLoop(vidSource):
         print idx
 
         # Display result on the output image
-        cv2.putText(frame, "%d bps"%respiratoryRate, (50,50), cv2.FONT_HERSHEY_PLAIN, 2, (0,20,255))
+        cv2.putText(frame, "%d bps"%respiratoryRate, (50,50), cv2.FONT_HERSHEY_TRIPLEX, 1, (0,20,255))
         cv2.imshow('output', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
