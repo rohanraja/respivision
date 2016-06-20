@@ -33,7 +33,7 @@ def searchFreq(freqs, signals):
     for i in range(10, signals.shape[1]):
         for j in range(signals.shape[2]):
 
-            idxMax = signals[:,i,j].argmax()
+            idxMax = abs(signals[:,i,j]).argmax()
             freqMax = freqs[idxMax]
             ampMax = signals[idxMax,i,j]
 
@@ -44,5 +44,5 @@ def searchFreq(freqs, signals):
                 Mj = j
                 print "(%d,%d) -> Freq:%f Amp:%f"%(i,j,freqMax*60, abs(ampMax))
 
-    rate = freqMax*60
+    rate = freMax*60
     return rate

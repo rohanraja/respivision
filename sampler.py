@@ -5,7 +5,14 @@ import cv2
 
 def sampleAndRunLoop(vidSource):
 
-    fps = vidSource.get(cv2.cv.CV_CAP_PROP_FPS)
+    (major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')
+    if int(major_ver)  < 3 :
+        fps = vidSource.get(cv2.cv.CV_CAP_PROP_FPS)
+    else :
+        fps = vidSource.get(cv2.CAP_PROP_FPS)
+
+    if fps == 0:
+        fps = 24
 
     sampleLen = getParam["SampleLength"]
 
@@ -31,10 +38,8 @@ def sampleAndRunLoop(vidSource):
 
         idx += 1
 
-        print idx
-
         # Display result on the output image
-        cv2.putText(frame, "%d bps"%respiratoryRate, (50,50), cv2.FONT_HERSHEY_TRIPLEX, 1, (0,20,255))
+        cv2.putText(frame, "Frame: %d, %d bps"%(idx, respiratoryRate), (50,50), cv2.FONT_HERSHEY_TRIPLEX, 0.7, (0,20,255))
         cv2.imshow('output', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
