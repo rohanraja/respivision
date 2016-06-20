@@ -1,4 +1,5 @@
 import cv2
+from parameters import getParam
 import numpy as np
 
 def applyFFT(frames, fps):
@@ -24,7 +25,28 @@ def bandPass(freqs, signals, freqRange):
 
     return signals
 
-def searchFreq(freqs, signals):
+from numpy import argmax, sqrt, mean, diff, log
+from matplotlib.mlab import find
+
+def freq_from_crossings(sig, fs):
+    """Estimate frequency by counting zero crossings
+    
+    """
+    # Find all indices right before a rising-edge zero crossing
+    indices = find((sig[1:] >= 0) & (sig[:-1] < 0))
+    
+    # Naive (Measures 1000.185 Hz for 1000 Hz, for instance)
+    #crossings = indices
+    
+    # More accurate, using linear interpolation to find intersample 
+    # zero-crossings (Measures 1000.000129 Hz for 1000 Hz, for instance)
+    crossings = [i - sig[i] / (sig[i+1] - sig[i]) for i in indices]
+    
+    # Some other interpolation based on neighboring points might be better. Spline, cubic, whatever
+    
+    return fs / mean(diff(crossings))
+
+def searchFreq(freqs, signals, frames, fs):
 
     curMax = 0
     freMax = 0
@@ -42,7 +64,19 @@ def searchFreq(freqs, signals):
                 freMax = freqMax
                 Mi = i
                 Mj = j
-                print "(%d,%d) -> Freq:%f Amp:%f"%(i,j,freqMax*60, abs(ampMax))
+                # print "(%d,%d) -> Freq:%f Amp:%f"%(i,j,freqMax*60, abs(ampMax))
 
-    rate = freMax*60
+
+    y = frames[:,Mi, Mj]
+    y = y - y.mean()
+    fq = freq_from_crossings(y, fs)
+    rate_fft = freMax*60
+    rate_count = fq*60
+    if np.isnan(rate_count):
+        rate = rate_fft
+    elif abs(rate_fft - rate_count) > getParam["fft_count_diff"]:
+        rate = rate_fft
+    else:
+        rate = rate_count
+
     return rate

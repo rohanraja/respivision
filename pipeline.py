@@ -46,6 +46,8 @@ class PipeLine():
         respiratoryRate = getModule("Select Frequency")(
                 freqs, 
                 signals,
+                frames,
+                self.frameRate
         )
 
         return respiratoryRate
